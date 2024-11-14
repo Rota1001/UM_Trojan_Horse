@@ -28,7 +28,7 @@ extern "C" __declspec(dllexport) void StartUM(){
 }
 
 DWORD WINAPI StartFunction(LPVOID lpParam){
-    PlaySound(TEXT("C:\\Users\\User\\Favorites\\UM.wav"), NULL, SND_FILENAME | SND_ASYNC);
+    PlaySound(TEXT("C:\\Users\\User\\Favorites\\UM.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
     return 0;
 }
 
