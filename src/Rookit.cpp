@@ -8,7 +8,7 @@ void AddDllToStartup(char* dll) {
     std::string command = "rundll32.exe " + dllPath + "," + functionName;
 
     HKEY hKey;
-    LONG result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\Windows\\CurrentVersion\\Run", 0, KEY_SET_VALUE, &hKey);
+    LONG result = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", 0, KEY_SET_VALUE, &hKey);
     if (result != ERROR_SUCCESS) {
         return;
     }
