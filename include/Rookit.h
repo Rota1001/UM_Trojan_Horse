@@ -3,6 +3,6 @@
 #include<map>
 #include<fstream>
 
-void AddDllToStartup(char*);
+void AddDllToStartup(wchar_t*);
 
-void HideDllFile(char*);
+void HideDllFile(wchar_t*);

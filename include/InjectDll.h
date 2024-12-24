@@ -5,10 +5,10 @@
 #include<set>
 #include<psapi.h>
 
-extern "C" __declspec(dllexport) void inject(DWORD pid, char*);
+extern "C" __declspec(dllexport) void inject(DWORD pid, wchar_t*);
 
 bool isRundll32();
 
-void injectionLoop(char*);
+void injectionLoop(wchar_t*);
 
 bool IsDllLoadedInProcess(DWORD, const std::string&);

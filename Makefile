@@ -2,6 +2,8 @@ CXX = g++
 
 CXXFLAGS = -I./include
 
+LIBFLAGS = -lpsapi -lwinmm -lShlwapi
+
 TARGET = bin\UM.dll
 
 SRCS = $(wildcard src/*.cpp)
@@ -11,7 +13,7 @@ OBJS = $(SRCS:src/%.cpp=build/%.o)
 all: build bin $(TARGET) output
 
 $(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) -shared -o $(TARGET) $(OBJS) -lpsapi -lwinmm
+	$(CXX) $(CXXFLAGS) -shared -o $(TARGET) $(OBJS) $(LIBFLAGS)
 
 build/%.o: src/%.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
